@@ -1,0 +1,22 @@
+echo "[*] Fixing sudoers..."
+
+# Make sure directory exists
+mkdir -p /private/etc
+
+# Remove broken sudoers (file or directory)
+rm -rf /private/etc/sudoers
+
+# Create a clean sudoers file
+cat <<'EOF' > /private/etc/sudoers
+root ALL=(ALL) ALL
+%admin ALL=(ALL) ALL
+EOF
+
+# Set correct permissions
+chown root:wheel /private/etc/sudoers
+chmod 440 /private/etc/sudoers
+
+# Verify
+ls -l /private/etc/sudoers
+
+echo "[+] Done. Reboot and test with: sudo whoami"
