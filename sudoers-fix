@@ -1,22 +1,35 @@
-echo "[*] Fixing sudoers..."
+echo "[*] Detecting available volumes..."
+echo
 
-# Make sure directory exists
-mkdir -p /private/etc
+ls /Volumes
+echo
+echo "Enter the EXACT name of your Data volume (example: Macintosh HD - Data):"
+read VOLNAME
 
-# Remove broken sudoers (file or directory)
-rm -rf /private/etc/sudoers
+VOL="/Volumes/$VOLNAME"
 
-# Create a clean sudoers file
-cat <<'EOF' > /private/etc/sudoers
+echo "[*] Using: $VOL"
+
+if [ ! -d "$VOL/private/etc" ]; then
+  echo "[*] Creating etc directory..."
+  mkdir -p "$VOL/private/etc"
+fi
+
+echo "[*] Removing broken sudoers..."
+rm -rf "$VOL/private/etc/sudoers"
+
+echo "[*] Writing fresh sudoers file..."
+cat <<'EOF' > "$VOL/private/etc/sudoers"
 root ALL=(ALL) ALL
 %admin ALL=(ALL) ALL
 EOF
 
-# Set correct permissions
-chown root:wheel /private/etc/sudoers
-chmod 440 /private/etc/sudoers
+echo "[*] Fixing permissions..."
+chown root:wheel "$VOL/private/etc/sudoers"
+chmod 440 "$VOL/private/etc/sudoers"
 
-# Verify
-ls -l /private/etc/sudoers
-
-echo "[+] Done. Reboot and test with: sudo whoami"
+echo
+echo "[+] Done. Result:"
+ls -l "$VOL/private/etc/sudoers"
+echo
+echo "[*] Reboot and test with: sudo whoami"
